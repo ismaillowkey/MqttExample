@@ -100,7 +100,7 @@ namespace MqttExample
         {
             try
             {
-                //await client.SubscribeAsync("/ismaillowkey/building1", MqttQualityOfServiceLevel.AtMostOnce);
+                //await client.SubscribeAsync("/iot/#", MqttQualityOfServiceLevel.AtMostOnce);
 
                 // or
 
