@@ -136,6 +136,7 @@
             this.MtxtTopicSubscribe.Name = "MtxtTopicSubscribe";
             this.MtxtTopicSubscribe.Size = new System.Drawing.Size(110, 20);
             this.MtxtTopicSubscribe.TabIndex = 1;
+            this.MtxtTopicSubscribe.Text = "iot/#";
             // 
             // metroLabel2
             // 

@@ -44,34 +44,64 @@ namespace MqttExample
                 .WithCommunicationTimeout(TimeSpan.FromSeconds(3))
                 .Build();
 
-            client.ConnectAsync(clientOptions, CancellationToken.None); // Since 3.0.5 with CancellationToken
-            ShowMessage(LblMqttStatus, "Reconnecting");
-
             client.UseApplicationMessageReceivedHandler(OnMessageReceived);
             client.UseConnectedHandler(OnConnected);
-            client.UseDisconnectedHandler(OnDisconnected);
+            //client.UseDisconnectedHandler(OnDisconnected);
+
+            client.UseDisconnectedHandler(async err =>
+            {
+                Console.WriteLine("### DISCONNECTED FROM SERVER ###");
+                ShowMessage(LblMqttStatus, "Reconnecting");
+                await Task.Delay(TimeSpan.FromSeconds(5));
+
+                try
+                {
+                    await client.ConnectAsync(clientOptions, CancellationToken.None); // Since 3.0.5 with CancellationToken
+                    var topic_sub = new MqttTopicFilterBuilder()
+                        .WithTopic(MtxtTopicSubscribe.Text)
+                        .WithAtMostOnceQoS()
+                        .Build();
+
+                    await client.SubscribeAsync(topic_sub);
+                }
+                catch
+                {
+                    Console.WriteLine("### RECONNECTING FAILED ###");
+                    ShowMessage(LblMqttStatus, "Reconnecting");
+                }
+            });
+
+            Task.Run(async () =>
+            {
+                await client.ConnectAsync(clientOptions, CancellationToken.None); // Since 3.0.5 with CancellationToken
+                ShowMessage(LblMqttStatus, "Reconnecting");
+            });
+            
         }
 
         private Task OnDisconnected(MqttClientDisconnectedEventArgs arg)
         {
             ShowMessage(LblMqttStatus, "Reconnecting");
 
-            Task.Delay(TimeSpan.FromSeconds(5));
-            try
+            Task.Run(async () =>
             {
-                client.ConnectAsync(clientOptions, CancellationToken.None); // Since 3.0.5 with CancellationToken
-            }
-            catch
-            {
-                ShowMessage(LblMqttStatus, "Reconnecting failed");
-            }
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                await client.ConnectAsync(clientOptions, CancellationToken.None); // Since 3.0.5 with CancellationToken
+                ShowMessage(LblMqttStatus, "Reconnecting");
+            });
+
             return Task.CompletedTask;
         }
 
         private Task OnConnected(MqttClientConnectedEventArgs arg)
         {
             ShowMessage(LblMqttStatus, "Connected");
+            var topic_sub = new MqttTopicFilterBuilder()
+                        .WithTopic(MtxtTopicSubscribe.Text)
+                        .WithAtMostOnceQoS()
+                        .Build();
 
+            client.SubscribeAsync(topic_sub);
             this.Invoke((MethodInvoker)delegate
             {
                 BtnConnect.Enabled = false;
@@ -86,13 +116,24 @@ namespace MqttExample
 
         private Task OnMessageReceived(MqttApplicationMessageReceivedEventArgs arg)
         {
+            // get payload
             string ReceivedMessage = Encoding.UTF8.GetString(arg.ApplicationMessage.Payload);
+
             //get topic name
-            string topicreceived = arg.ApplicationMessage.Topic;
-            ShowMessageTextbox(TxtTopicNamereceived, topicreceived);
+            string TopicReceived = arg.ApplicationMessage.Topic;
+
+            Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
+            Console.WriteLine($"+ Topic = {TopicReceived}");
+            Console.WriteLine($"+ Payload = {ReceivedMessage}");
+            Console.WriteLine($"+ QoS = {arg.ApplicationMessage.QualityOfServiceLevel}");
+            Console.WriteLine($"+ Retain = {arg.ApplicationMessage.Retain}");
+            Console.WriteLine();
+
+            ShowMessageTextbox(TxtTopicNamereceived, TopicReceived);
 
             // Show message
             ShowMessageRT(ReceivedMessage);
+
             return Task.CompletedTask;
         }
 
@@ -121,14 +162,21 @@ namespace MqttExample
 
         private async void MbtnPublish_ClickAsync(object sender, EventArgs e)
         {
-            var message = new MqttApplicationMessageBuilder()
-                 .WithTopic(MtxtTopicPublish.Text)
-                 .WithPayload(RTPublishJson.Text)
-                 .WithAtMostOnceQoS()
-                 .WithRetainFlag()
-                 .Build();
+            try
+            {
+                var message = new MqttApplicationMessageBuilder()
+                     .WithTopic(MtxtTopicPublish.Text)
+                     .WithPayload(RTPublishJson.Text)
+                     .WithAtMostOnceQoS()
+                     .WithRetainFlag()
+                     .Build();
 
-            await client.PublishAsync(message, CancellationToken.None); // Since 3.0.5 with CancellationToken
+                await client.PublishAsync(message, CancellationToken.None); // Since 3.0.5 with CancellationToken        
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         #region "Delegate"
