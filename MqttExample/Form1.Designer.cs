@@ -62,7 +62,7 @@
             this.GBSubscribeTopic.Enabled = false;
             this.GBSubscribeTopic.Location = new System.Drawing.Point(31, 111);
             this.GBSubscribeTopic.Name = "GBSubscribeTopic";
-            this.GBSubscribeTopic.Size = new System.Drawing.Size(587, 333);
+            this.GBSubscribeTopic.Size = new System.Drawing.Size(587, 324);
             this.GBSubscribeTopic.TabIndex = 3;
             this.GBSubscribeTopic.TabStop = false;
             this.GBSubscribeTopic.Text = "Subscribe Topic";
@@ -70,9 +70,9 @@
             // LBTopicSubscribe
             // 
             this.LBTopicSubscribe.FormattingEnabled = true;
-            this.LBTopicSubscribe.Location = new System.Drawing.Point(7, 105);
+            this.LBTopicSubscribe.Location = new System.Drawing.Point(7, 92);
             this.LBTopicSubscribe.Name = "LBTopicSubscribe";
-            this.LBTopicSubscribe.Size = new System.Drawing.Size(288, 186);
+            this.LBTopicSubscribe.Size = new System.Drawing.Size(288, 199);
             this.LBTopicSubscribe.TabIndex = 15;
             // 
             // metroLabel3
@@ -154,7 +154,7 @@
             this.BtnConnect.Size = new System.Drawing.Size(75, 23);
             this.BtnConnect.TabIndex = 5;
             this.BtnConnect.Text = "Connect";
-            this.BtnConnect.Click += new System.EventHandler(this.BtnConnect_ClickAsync);
+            this.BtnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
             // 
             // TxtMqttBroker
             // 
@@ -224,6 +224,7 @@
             this.Controls.Add(this.GBSubscribeTopic);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.GBSubscribeTopic.ResumeLayout(false);
             this.GBSubscribeTopic.PerformLayout();
             this.groupBox1.ResumeLayout(false);
