@@ -162,7 +162,7 @@
             this.TxtMqttBroker.Name = "TxtMqttBroker";
             this.TxtMqttBroker.Size = new System.Drawing.Size(136, 23);
             this.TxtMqttBroker.TabIndex = 6;
-            this.TxtMqttBroker.Text = "emqx.ismaillowkey.xyz";
+            this.TxtMqttBroker.Text = "ismaillowkey.my.id";
             this.TxtMqttBroker.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // groupBox1
